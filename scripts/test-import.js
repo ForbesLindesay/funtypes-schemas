@@ -50,6 +50,9 @@ writeFileSync(
   JSON.stringify({
     name: 'funtypes-schema-test-import',
     private: true,
+    dependencies: {
+      funtypes: require('../package.json').devDependencies.funtypes,
+    },
   }) + `\n`,
 );
 

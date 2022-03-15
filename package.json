@@ -32,8 +32,8 @@
     "test:unit": "jest $([ \"$CI\" = true ] && echo --coverage || echo --watch)",
     "test:unit:coverage": "jest --coverage"
   },
-  "dependencies": {
-    "funtypes": "^4.2.0"
+  "peerDependencies": {
+    "funtypes": ">=4.2.0"
   },
   "devDependencies": {
     "@forbeslindesay/tsconfig": "^2.1.0",
@@ -42,6 +42,7 @@
     "@typescript-eslint/parser": "^5.15.0",
     "eslint": "^8.11.0",
     "eslint-plugin-import": "^2.25.4",
+    "funtypes": "^4.2.0",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "lint-staged": "^10.1.3",

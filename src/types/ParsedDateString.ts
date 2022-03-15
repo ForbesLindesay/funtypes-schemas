@@ -4,7 +4,7 @@ import {Constraint, InstanceOf, ParsedValue} from 'funtypes';
 import type {DateStringOptions} from './DateString';
 import DateString from './DateString';
 
-export default function ParsedDateTimeString(
+export default function ParsedDateString(
   options?: DateStringOptions,
 ): Codec<Date> {
   const base = DateString(options);
