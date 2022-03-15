@@ -6,7 +6,7 @@ import type {DateTimeStringOptions} from './DateTimeString';
 import DateTimeString from './DateTimeString';
 
 export default function ParsedDateTimeString(
-  options?: DateTimeStringOptions,
+  options: DateTimeStringOptions,
 ): Codec<Date> {
   return ParsedValue(DateTimeString(options), {
     name: `Date`,

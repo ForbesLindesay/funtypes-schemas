@@ -12,6 +12,9 @@ function testBuffers() {
   return buffers;
 }
 test(`base64`, () => {
+  expect(base64Decode(Buffer.from(`hello world`).toString(`base64`))).toEqual(
+    new Uint8Array([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]),
+  );
   for (const buffer of testBuffers()) {
     const b64 = buffer.toString(`base64`);
     try {

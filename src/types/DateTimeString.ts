@@ -5,13 +5,13 @@ import type {DateTimeOptions} from './DateTime';
 import {validateDateOptions} from './DateTime';
 
 export interface DateTimeStringOptions extends DateTimeOptions {
-  strict?: boolean;
+  strict: boolean;
 }
 export default function DateTimeString({
   min,
   max,
-  strict = false,
-}: DateTimeStringOptions = {}): Codec<string> {
+  strict,
+}: DateTimeStringOptions): Codec<string> {
   validateDateOptions({min, max});
 
   return Constraint(

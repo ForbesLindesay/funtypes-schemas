@@ -193,17 +193,17 @@ test(`DateTime`, () => {
 
 test(`DateTimeString`, () => {
   expectOk(
-    s.DateTimeString().safeParse(`2022-03-15T11:00:00Z`),
+    s.DateTimeString({strict: false}).safeParse(`2022-03-15T11:00:00Z`),
   ).toMatchInlineSnapshot(`"2022-03-15T11:00:00Z"`);
-  expectFail(s.DateTimeString().safeParse(`hello world`)).toMatchInlineSnapshot(
-    `"\\"hello world\\" is not a valid date"`,
-  );
   expectFail(
-    s.DateTimeString().safeParse(`2022-03-38T00:00:00Z`),
+    s.DateTimeString({strict: false}).safeParse(`hello world`),
+  ).toMatchInlineSnapshot(`"\\"hello world\\" is not a valid date"`);
+  expectFail(
+    s.DateTimeString({strict: false}).safeParse(`2022-03-38T00:00:00Z`),
   ).toMatchInlineSnapshot(`"\\"2022-03-38T00:00:00Z\\" is not a valid date"`);
 
   expectOk(
-    s.DateTimeString().safeParse(`2022-02-31T00:00:00Z`),
+    s.DateTimeString({strict: false}).safeParse(`2022-02-31T00:00:00Z`),
   ).toMatchInlineSnapshot(`"2022-02-31T00:00:00Z"`);
   expectFail(
     s.DateTimeString({strict: true}).safeParse(`2022-02-31T00:00:00Z`),
@@ -213,9 +213,9 @@ test(`DateTimeString`, () => {
   expectOk(
     s.DateTimeString({strict: true}).safeParse(`2022-02-28T00:00:00Z`),
   ).toMatchInlineSnapshot(`"2022-02-28T00:00:00Z"`);
-  expectOk(s.DateTimeString().safeParse(`1 March 2022`)).toMatchInlineSnapshot(
-    `"1 March 2022"`,
-  );
+  expectOk(
+    s.DateTimeString({strict: false}).safeParse(`1 March 2022`),
+  ).toMatchInlineSnapshot(`"1 March 2022"`);
   expectFail(
     s.DateTimeString({strict: true}).safeParse(`1 March 2022`),
   ).toMatchInlineSnapshot(
@@ -227,6 +227,7 @@ test(`DateTimeString`, () => {
       .DateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-15`),
   ).toMatchInlineSnapshot(`"2022-03-15"`);
@@ -235,6 +236,7 @@ test(`DateTimeString`, () => {
       .DateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-09`),
   ).toMatchInlineSnapshot(
@@ -245,10 +247,167 @@ test(`DateTimeString`, () => {
       .DateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-21`),
   ).toMatchInlineSnapshot(
     `"Expected a date on or before 2022-03-20T00:00:00.000Z but got \\"2022-03-21\\""`,
+  );
+});
+
+test(`Float`, () => {
+  expect(() =>
+    s.Float({min: 10 + (undefined as any), max: 3}),
+  ).toThrowErrorMatchingInlineSnapshot(`"Expected min (NaN) to be a number"`);
+  expect(() =>
+    s.Float({min: 0, max: 10 + (undefined as any)}),
+  ).toThrowErrorMatchingInlineSnapshot(`"Expected max (NaN) to be a number"`);
+  expect(() => s.Float({min: 10, max: 3})).toThrowErrorMatchingInlineSnapshot(
+    `"Expected min (10) to be less than max (3)"`,
+  );
+
+  expectOk(s.Float().safeParse(100)).toMatchInlineSnapshot(`100`);
+  expectOk(s.Float().safeParse(0)).toMatchInlineSnapshot(`0`);
+  expectOk(s.Float().safeParse(-1)).toMatchInlineSnapshot(`-1`);
+  expectOk(s.Float().safeParse(1.5)).toMatchInlineSnapshot(`1.5`);
+  expectOk(s.Float().safeParse(Math.pow(2, 56))).toMatchInlineSnapshot(
+    `72057594037927940`,
+  );
+  expectOk(s.Float().safeParse(Math.pow(2, 56) * -1)).toMatchInlineSnapshot(
+    `-72057594037927940`,
+  );
+
+  expectFail(
+    s.Float().safeParse(100 + (undefined as any)),
+  ).toMatchInlineSnapshot(`"NaN is not a valid number"`);
+
+  expectOk(s.Float({min: -20, max: 30}).safeParse(25)).toMatchInlineSnapshot(
+    `25`,
+  );
+  expectOk(s.Float({min: -20, max: 30}).safeParse(0)).toMatchInlineSnapshot(
+    `0`,
+  );
+  expectOk(s.Float({min: -20, max: 30}).safeParse(-15)).toMatchInlineSnapshot(
+    `-15`,
+  );
+  expectFail(s.Float({min: -20, max: 30}).safeParse(35)).toMatchInlineSnapshot(
+    `"Expected value to be less than or equal to 30 but got 35"`,
+  );
+  expectFail(s.Float({min: -20, max: 30}).safeParse(-25)).toMatchInlineSnapshot(
+    `"Expected value to be greater than or equal to -20 but got -25"`,
+  );
+
+  expectOk(s.Float({min: -20, max: -15}).safeParse(-20)).toMatchInlineSnapshot(
+    `-20`,
+  );
+  expectOk(s.Float({min: -20, max: -15}).safeParse(-17)).toMatchInlineSnapshot(
+    `-17`,
+  );
+  expectOk(s.Float({min: -20, max: -15}).safeParse(-15)).toMatchInlineSnapshot(
+    `-15`,
+  );
+  expectFail(s.Float({min: -20, max: -15}).safeParse(17)).toMatchInlineSnapshot(
+    `"Expected value to be less than or equal to -15 but got 17"`,
+  );
+  expectFail(
+    s.Float({min: -20, max: -15}).safeParse(-25),
+  ).toMatchInlineSnapshot(
+    `"Expected value to be greater than or equal to -20 but got -25"`,
+  );
+  expectFail(s.Float({min: -20, max: -15}).safeParse(-5)).toMatchInlineSnapshot(
+    `"Expected value to be less than or equal to -15 but got -5"`,
+  );
+});
+
+test(`FloatString`, () => {
+  expect(() =>
+    s.FloatString({min: `10`, max: `3`}),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"Expected min (\\"10\\") to be less than max (\\"3\\")"`,
+  );
+
+  expectOk(s.FloatString().safeParse(`100`)).toMatchInlineSnapshot(`"100"`);
+  expectOk(s.FloatString().safeParse(`0`)).toMatchInlineSnapshot(`"0"`);
+  expectOk(s.FloatString().safeParse(`-1`)).toMatchInlineSnapshot(`"-1"`);
+  expectOk(s.FloatString().safeParse(`1.5`)).toMatchInlineSnapshot(`"1.5"`);
+  expectOk(
+    s.FloatString().safeParse(Math.pow(2, 56).toString(10)),
+  ).toMatchInlineSnapshot(`"72057594037927940"`);
+  expectOk(
+    s.FloatString().safeParse((Math.pow(2, 56) * -1).toString(10)),
+  ).toMatchInlineSnapshot(`"-72057594037927940"`);
+  expectFail(s.FloatString().safeParse(`hello world`)).toMatchInlineSnapshot(
+    `"Expected a numeric string but got \\"hello world\\""`,
+  );
+
+  expectOk(
+    s.FloatString({min: `1.2`, max: `1.8`}).safeParse(`1.5`),
+  ).toMatchInlineSnapshot(`"1.5"`);
+  expectFail(
+    s.FloatString({min: `1.2`, max: `1.8`}).safeParse(`1.1`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value greater than or equal to \\"1.2\\" but got \\"1.1\\""`,
+  );
+  expectFail(
+    s.FloatString({min: `1.2`, max: `1.8`}).safeParse(`1.9`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"1.8\\" but got \\"1.9\\""`,
+  );
+
+  expectOk(
+    s
+      .FloatString({min: `0`, max: `72057594037927946`})
+      .safeParse(`72057594037927945`),
+  ).toMatchInlineSnapshot(`"72057594037927945"`);
+  expectOk(
+    s
+      .FloatString({min: `0`, max: `72057594037927946`})
+      .safeParse(`7205759403792794`),
+  ).toMatchInlineSnapshot(`"7205759403792794"`);
+
+  expectOk(
+    s.FloatString({min: `-20`, max: `30`}).safeParse(`25`),
+  ).toMatchInlineSnapshot(`"25"`);
+  expectOk(
+    s.FloatString({min: `-20`, max: `30`}).safeParse(`0`),
+  ).toMatchInlineSnapshot(`"0"`);
+  expectOk(
+    s.FloatString({min: `-20`, max: `30`}).safeParse(`-15`),
+  ).toMatchInlineSnapshot(`"-15"`);
+  expectFail(
+    s.FloatString({min: `-20`, max: `30`}).safeParse(`35`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"30\\" but got \\"35\\""`,
+  );
+  expectFail(
+    s.FloatString({min: `-20`, max: `30`}).safeParse(`-25`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value greater than or equal to \\"-20\\" but got \\"-25\\""`,
+  );
+
+  expectOk(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`-20`),
+  ).toMatchInlineSnapshot(`"-20"`);
+  expectOk(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`-17`),
+  ).toMatchInlineSnapshot(`"-17"`);
+  expectOk(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`-15`),
+  ).toMatchInlineSnapshot(`"-15"`);
+  expectFail(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`17`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"-15\\" but got \\"17\\""`,
+  );
+  expectFail(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`-25`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value greater than or equal to \\"-20\\" but got \\"-25\\""`,
+  );
+  expectFail(
+    s.FloatString({min: `-20`, max: `-15`}).safeParse(`-5`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"-15\\" but got \\"-5\\""`,
   );
 });
 
@@ -279,6 +438,9 @@ test(`Integer`, () => {
   expectFail(s.Integer().safeParse(Math.pow(2, 56) * -1)).toMatchInlineSnapshot(
     `"Expected an integer between -9007199254740991 and 9007199254740991 but got -72057594037927940"`,
   );
+  expectFail(
+    s.Integer().safeParse(100 + (undefined as any)),
+  ).toMatchInlineSnapshot(`"NaN is not a valid number"`);
 
   expectOk(s.Integer({min: -20, max: 30}).safeParse(25)).toMatchInlineSnapshot(
     `25`,
@@ -339,14 +501,19 @@ test(`IntegerString`, () => {
   expectFail(s.IntegerString().safeParse(`1.5`)).toMatchInlineSnapshot(
     `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"1.5\\""`,
   );
+  expectFail(s.IntegerString().safeParse(`hello world`)).toMatchInlineSnapshot(
+    `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"hello world\\""`,
+  );
   expectFail(
     s.IntegerString().safeParse(Math.pow(2, 56).toString(10)),
   ).toMatchInlineSnapshot(
     `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"72057594037927940\\""`,
   );
   expectFail(
-    s.IntegerString().safeParse(Math.pow(2, 56) * -1),
-  ).toMatchInlineSnapshot(`"Expected string, but was -72057594037927940"`);
+    s.IntegerString().safeParse((Math.pow(2, 56) * -1).toString(10)),
+  ).toMatchInlineSnapshot(
+    `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"-72057594037927940\\""`,
+  );
 
   expectOk(
     s
@@ -505,17 +672,17 @@ test(`ParsedDateString`, () => {
 
 test(`ParsedDateTimeString`, () => {
   expectOk(
-    s.ParsedDateTimeString().safeParse(`2022-03-15T11:00:00Z`),
+    s.ParsedDateTimeString({strict: false}).safeParse(`2022-03-15T11:00:00Z`),
   ).toMatchInlineSnapshot(`2022-03-15T11:00:00.000Z`);
   expectFail(
-    s.ParsedDateTimeString().safeParse(`hello world`),
+    s.ParsedDateTimeString({strict: false}).safeParse(`hello world`),
   ).toMatchInlineSnapshot(`"\\"hello world\\" is not a valid date"`);
   expectFail(
-    s.ParsedDateTimeString().safeParse(`2022-03-38T00:00:00Z`),
+    s.ParsedDateTimeString({strict: false}).safeParse(`2022-03-38T00:00:00Z`),
   ).toMatchInlineSnapshot(`"\\"2022-03-38T00:00:00Z\\" is not a valid date"`);
 
   expectOk(
-    s.ParsedDateTimeString().safeParse(`2022-02-31T00:00:00Z`),
+    s.ParsedDateTimeString({strict: false}).safeParse(`2022-02-31T00:00:00Z`),
   ).toMatchInlineSnapshot(`2022-03-03T00:00:00.000Z`);
   expectFail(
     s.ParsedDateTimeString({strict: true}).safeParse(`2022-02-31T00:00:00Z`),
@@ -526,7 +693,7 @@ test(`ParsedDateTimeString`, () => {
     s.ParsedDateTimeString({strict: true}).safeParse(`2022-02-28T00:00:00Z`),
   ).toMatchInlineSnapshot(`2022-02-28T00:00:00.000Z`);
   expectOk(
-    s.ParsedDateTimeString().safeParse(`1 March 2022`),
+    s.ParsedDateTimeString({strict: false}).safeParse(`1 March 2022`),
   ).toMatchInlineSnapshot(`2022-03-01T00:00:00.000Z`);
   expectFail(
     s.ParsedDateTimeString({strict: true}).safeParse(`1 March 2022`),
@@ -539,6 +706,7 @@ test(`ParsedDateTimeString`, () => {
       .ParsedDateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-15`),
   ).toMatchInlineSnapshot(`2022-03-15T00:00:00.000Z`);
@@ -547,6 +715,7 @@ test(`ParsedDateTimeString`, () => {
       .ParsedDateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-09`),
   ).toMatchInlineSnapshot(
@@ -557,6 +726,7 @@ test(`ParsedDateTimeString`, () => {
       .ParsedDateTimeString({
         min: new Date(`2022-03-10`),
         max: new Date(`2022-03-20`),
+        strict: false,
       })
       .safeParse(`2022-03-21`),
   ).toMatchInlineSnapshot(
@@ -564,17 +734,97 @@ test(`ParsedDateTimeString`, () => {
   );
 
   expectOk(
-    s.ParsedDateTimeString().safeSerialize(new Date(`2022-03-15`)),
+    s
+      .ParsedDateTimeString({strict: false})
+      .safeSerialize(new Date(`2022-03-15`)),
   ).toMatchInlineSnapshot(`"2022-03-15T00:00:00.000Z"`);
   expectOk(
-    s.ParsedDateTimeString().safeSerialize(new Date(`2022-03-15T11:00:00Z`)),
+    s
+      .ParsedDateTimeString({strict: false})
+      .safeSerialize(new Date(`2022-03-15T11:00:00Z`)),
   ).toMatchInlineSnapshot(`"2022-03-15T11:00:00.000Z"`);
   expectFail(
     s
-      .ParsedDateTimeString({min: new Date('2022-03-10')})
+      .ParsedDateTimeString({min: new Date('2022-03-10'), strict: false})
       .safeSerialize(new Date(`2022-03-05`)),
   ).toMatchInlineSnapshot(
     `"Expected a date on or after 2022-03-10T00:00:00.000Z but got 2022-03-05T00:00:00.000Z"`,
+  );
+});
+
+test(`ParsedFloatString`, () => {
+  expect(() =>
+    s.ParsedFloatString({min: 10, max: 3}),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"Expected min (\\"10\\") to be less than max (\\"3\\")"`,
+  );
+
+  expectOk(s.ParsedFloatString().safeParse(`100`)).toMatchInlineSnapshot(`100`);
+  expectOk(s.ParsedFloatString().safeParse(`0`)).toMatchInlineSnapshot(`0`);
+  expectOk(s.ParsedFloatString().safeParse(`-1`)).toMatchInlineSnapshot(`-1`);
+  expectOk(s.ParsedFloatString().safeParse(`1.5`)).toMatchInlineSnapshot(`1.5`);
+  expectOk(
+    s.ParsedFloatString().safeParse(Math.pow(2, 56).toString(10)),
+  ).toMatchInlineSnapshot(`72057594037927940`);
+  expectOk(
+    s.ParsedFloatString().safeParse((Math.pow(2, 56) * -1).toString(10)),
+  ).toMatchInlineSnapshot(`-72057594037927940`);
+
+  expectOk(
+    s.ParsedFloatString({min: -20, max: 30}).safeParse(`25`),
+  ).toMatchInlineSnapshot(`25`);
+  expectOk(
+    s.ParsedFloatString({min: -20, max: 30}).safeParse(`0`),
+  ).toMatchInlineSnapshot(`0`);
+  expectOk(
+    s.ParsedFloatString({min: -20, max: 30}).safeParse(`-15`),
+  ).toMatchInlineSnapshot(`-15`);
+  expectFail(
+    s.ParsedFloatString({min: -20, max: 30}).safeParse(`35`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"30\\" but got \\"35\\""`,
+  );
+  expectFail(
+    s.ParsedFloatString({min: -20, max: 30}).safeParse(`-25`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value greater than or equal to \\"-20\\" but got \\"-25\\""`,
+  );
+
+  expectOk(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`-20`),
+  ).toMatchInlineSnapshot(`-20`);
+  expectOk(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`-17`),
+  ).toMatchInlineSnapshot(`-17`);
+  expectOk(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`-15`),
+  ).toMatchInlineSnapshot(`-15`);
+  expectFail(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`17`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"-15\\" but got \\"17\\""`,
+  );
+  expectFail(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`-25`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value greater than or equal to \\"-20\\" but got \\"-25\\""`,
+  );
+  expectFail(
+    s.ParsedFloatString({min: -20, max: -15}).safeParse(`-5`),
+  ).toMatchInlineSnapshot(
+    `"Expected a value less than or equal to \\"-15\\" but got \\"-5\\""`,
+  );
+
+  expectOk(s.ParsedFloatString().safeSerialize(42)).toMatchInlineSnapshot(
+    `"42"`,
+  );
+  expectOk(s.ParsedFloatString().safeSerialize(1.5)).toMatchInlineSnapshot(
+    `"1.5"`,
+  );
+  expectFail(
+    s.ParsedFloatString({min: 56}).safeSerialize(42),
+  ).toMatchInlineSnapshot(
+    `"Expected value to be greater than or equal to 56 but got 42"`,
   );
 });
 
@@ -599,8 +849,10 @@ test(`ParsedIntegerString`, () => {
     `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"72057594037927940\\""`,
   );
   expectFail(
-    s.ParsedIntegerString().safeParse(Math.pow(2, 56) * -1),
-  ).toMatchInlineSnapshot(`"Expected string, but was -72057594037927940"`);
+    s.ParsedIntegerString().safeParse((Math.pow(2, 56) * -1).toString(10)),
+  ).toMatchInlineSnapshot(
+    `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"-72057594037927940\\""`,
+  );
 
   expectOk(
     s.ParsedIntegerString({min: -20, max: 30}).safeParse(`25`),
@@ -787,12 +1039,15 @@ test('s', () => {
       "DateString": [Function],
       "DateTime": [Function],
       "DateTimeString": [Function],
+      "Float": [Function],
+      "FloatString": [Function],
       "Integer": [Function],
       "IntegerString": [Function],
       "ParsedBase64Array": [Function],
       "ParsedBase64String": [Function],
       "ParsedDateString": [Function],
       "ParsedDateTimeString": [Function],
+      "ParsedFloatString": [Function],
       "ParsedIntegerString": [Function],
       "ParsedUrlString": [Function],
       "Url": [Function],

@@ -37,6 +37,9 @@ export default function Integer({
   return Constraint(
     N,
     (value) => {
+      if (Number.isNaN(value)) {
+        return `NaN is not a valid number`;
+      }
       if (value !== Math.floor(value) || value > max || value < min) {
         return `Expected an integer between ${showValue(min)} and ${showValue(
           max,
