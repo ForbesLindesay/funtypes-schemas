@@ -1,9 +1,9 @@
 {
-  "name": "@forbeslindesay/npm-package-template",
-  "description": "npm-package-template",
+  "name": "funtypes-schemas",
+  "description": "Validators and parsers for common types not covered by the base \"funtypes\" package",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "repository": "git@github.com:ForbesLindesay/npm-package-template.git",
+  "repository": "git@github.com:ForbesLindesay/funtypes-schemas.git",
   "author": "Forbes Lindesay <forbes@lindesay.co.uk>",
   "license": "MIT",
   "scripts": {
