@@ -11,10 +11,10 @@ export default function ParsedUrlString(options?: UrlOptions): Codec<URL> {
       let url;
       try {
         url = new URL(value);
-      } catch (ex: any) {
+      } catch (_ex) {
         return {
           success: false,
-          message: ex.message,
+          message: `Invalid URL: ${value}`,
         };
       }
       return u.safeParse(url);

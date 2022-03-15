@@ -12,8 +12,8 @@ export default function UrlString(options?: UrlOptions): Codec<string> {
         let url;
         try {
           url = new URL(value);
-        } catch (ex: any) {
-          return ex.message;
+        } catch (_ex) {
+          return `Invalid URL: ${value}`;
         }
         const result = u.safeParse(url);
         if (!result.success) return result.message;
@@ -25,10 +25,10 @@ export default function UrlString(options?: UrlOptions): Codec<string> {
       let url;
       try {
         url = new URL(value);
-      } catch (ex: any) {
+      } catch (_ex) {
         return {
           success: false,
-          message: ex.message,
+          message: `Invalid URL: ${value}`,
         };
       }
       const result = u.safeParse(url);
