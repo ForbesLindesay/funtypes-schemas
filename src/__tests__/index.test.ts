@@ -1030,28 +1030,3 @@ test(`UrlString`, () => {
     `"Invalid URL: http:?/~~"`,
   );
 });
-
-test('s', () => {
-  expect(s).toMatchInlineSnapshot(`
-    Object {
-      "Base64String": [Function],
-      "ConstrainLength": [Function],
-      "DateString": [Function],
-      "DateTime": [Function],
-      "DateTimeString": [Function],
-      "Float": [Function],
-      "FloatString": [Function],
-      "Integer": [Function],
-      "IntegerString": [Function],
-      "ParsedBase64Array": [Function],
-      "ParsedBase64String": [Function],
-      "ParsedDateString": [Function],
-      "ParsedDateTimeString": [Function],
-      "ParsedFloatString": [Function],
-      "ParsedIntegerString": [Function],
-      "ParsedUrlString": [Function],
-      "Url": [Function],
-      "UrlString": [Function],
-    }
-  `);
-});
