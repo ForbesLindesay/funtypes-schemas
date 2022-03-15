@@ -1,4 +1,5 @@
-import {Codec, Constraint, showValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {Constraint, showValue} from 'funtypes';
 
 export interface ConstrainLengthOptions {
   min?: number;

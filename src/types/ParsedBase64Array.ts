@@ -1,4 +1,5 @@
-import {Codec, InstanceOf, ParsedValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {InstanceOf, ParsedValue} from 'funtypes';
 
 import {base64Decode, base64Encode} from '../utils/base64';
 import Base64String from './Base64String';

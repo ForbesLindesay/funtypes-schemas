@@ -1,6 +1,8 @@
-import {Codec, String as S, ParsedValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {String as S, ParsedValue} from 'funtypes';
 
-import Url, {UrlOptions} from './Url';
+import type {UrlOptions} from './Url';
+import Url from './Url';
 
 export default function ParsedUrlString(options?: UrlOptions): Codec<URL> {
   const u = Url(options);

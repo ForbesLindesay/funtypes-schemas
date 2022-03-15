@@ -1,5 +1,5 @@
-import {Codec, ParsedValue} from 'funtypes';
-import {String as S} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {String as S, ParsedValue} from 'funtypes';
 
 import {stringToUnicode, unicodeToString} from '../utils/base64';
 import ParsedBase64Array from './ParsedBase64Array';

@@ -1,5 +1,5 @@
-import {Codec, Constraint, InstanceOf} from 'funtypes';
-import {ParsedValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {Constraint, InstanceOf, ParsedValue} from 'funtypes';
 
 import type {DateStringOptions} from './DateString';
 import DateString from './DateString';
