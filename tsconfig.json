@@ -1,10 +1,12 @@
 {
   "extends": "@forbeslindesay/tsconfig",
   "compilerOptions": {
+    "module": "ESNext",
     "outDir": "lib",
     "incremental": true,
     "rootDir": "src",
-    "tsBuildInfoFile": "lib/.tsbuildinfo"
+    "tsBuildInfoFile": "lib/.tsbuildinfo",
+    "lib": ["ES2021", "DOM"]
   },
   "include": ["src"]
 }
