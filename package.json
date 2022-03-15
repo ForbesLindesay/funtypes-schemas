@@ -30,8 +30,7 @@
     "test": "yarn --silent test:import && yarn --silent test:unit",
     "test:import": "node scripts/test-import",
     "test:unit": "jest $([ \"$CI\" = true ] && echo --coverage || echo --watch)",
-    "test:unit:coverage": "jest --coverage",
-    "test:coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test:unit:coverage": "jest --coverage"
   },
   "dependencies": {
     "funtypes": "^4.2.0"
