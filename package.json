@@ -1,26 +1,47 @@
 {
   "name": "funtypes-schemas",
+  "version": "0.0.0",
   "description": "Validators and parsers for common types not covered by the base \"funtypes\" package",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib/"
+  ],
+  "exports": {
+    ".": [
+      {
+        "import": "./lib/index.mjs",
+        "require": "./lib/index.js",
+        "default": "./lib/index.js"
+      },
+      "./lib/index.js"
+    ]
+  },
   "repository": "git@github.com:ForbesLindesay/funtypes-schemas.git",
   "author": "Forbes Lindesay <forbes@lindesay.co.uk>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "rollup -c && tsc --noEmit",
     "postbuild": "rimraf lib/**/__tests__",
     "lint": "eslint --config .eslintrc-ts.js --no-eslintrc --ext .ts,.tsx src",
     "lint:fix": "eslint --fix --config .eslintrc-ts.js --no-eslintrc --ext .ts,.tsx src",
     "prettier:write": "prettier --ignore-path .gitignore --write './**/*.{md,json,yaml,js,jsx,ts,tsx}'",
     "prettier:check": "prettier --ignore-path .gitignore --list-different './**/*.{md,json,yaml,js,jsx,ts,tsx}'",
-    "test": "jest"
+    "test": "yarn --silent test:import && yarn --silent test:unit",
+    "test:import": "node scripts/test-import",
+    "test:unit": "jest $([ \"$CI\" = true ] && echo --coverage || echo --watch)",
+    "test:unit:coverage": "jest --coverage",
+    "test:coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
-  "dependencies": {},
+  "dependencies": {
+    "funtypes": "^4.2.0"
+  },
   "devDependencies": {
     "@forbeslindesay/tsconfig": "^2.1.0",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
+    "coveralls": "^3.0.6",
     "eslint": "^8.11.0",
     "eslint-plugin-import": "^2.25.4",
     "husky": "^4.2.5",
@@ -28,8 +49,13 @@
     "lint-staged": "^10.1.3",
     "prettier": "^2.0.4",
     "rimraf": "^3.0.2",
+    "rollup": "^2.26.11",
+    "rollup-plugin-prettier": "^2.1.0",
+    "rollup-plugin-size-snapshot": "^0.12.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.27.2",
     "ts-jest": "^26.0.0",
-    "typescript": "^3.8.3"
+    "typescript": "^4.6.2"
   },
   "jest": {
     "moduleFileExtensions": [
