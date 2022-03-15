@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Validators and parsers for common types not covered by the base \"funtypes\" package",
   "main": "lib/index.js",
+  "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
   "files": [
     "lib/"
