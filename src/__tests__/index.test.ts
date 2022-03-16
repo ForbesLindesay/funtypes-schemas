@@ -28,6 +28,27 @@ test(`Base64String`, () => {
   );
 });
 
+test(`ChainCodecs`, () => {
+  const example = s.ChainCodecs(
+    s.ParsedBase64String(),
+    s.ParsedIntegerString(),
+  );
+  expectOk(example.safeParse(`NDI=`)).toBe(42);
+  expectOk(example.safeSerialize(42)).toBe(`NDI=`);
+
+  expectFail(
+    example.safeParse(Buffer.from(`1.5`).toString(`base64`)),
+  ).toMatchInlineSnapshot(
+    `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"1.5\\""`,
+  );
+  expectFail(example.safeSerialize(1.5)).toMatchInlineSnapshot(
+    `"Expected an integer between -9007199254740991 and 9007199254740991 but got 1.5"`,
+  );
+  expectFail(example.safeParse('hello world')).toMatchInlineSnapshot(
+    `"Expected a base64 encoded string but got \\"hello world\\""`,
+  );
+});
+
 test(`ConstrainLength`, () => {
   expect(() =>
     s.ConstrainLength(t.String, {min: -1, max: 3}),
@@ -909,6 +930,51 @@ test(`ParsedIntegerString`, () => {
     s.ParsedIntegerString({min: 56}).safeSerialize(42),
   ).toMatchInlineSnapshot(
     `"Expected an integer between 56 and 9007199254740991 but got 42"`,
+  );
+});
+
+test(`ParsedJsonString`, () => {
+  const example = s.ParsedJsonString(
+    t.Object({value: s.ParsedIntegerString()}),
+  );
+  expectOk(example.safeParse(JSON.stringify({value: '10'})))
+    .toMatchInlineSnapshot(`
+    Object {
+      "value": 10,
+    }
+  `);
+  expectOk(example.safeSerialize({value: 10})).toMatchInlineSnapshot(
+    `"{\\"value\\":\\"10\\"}"`,
+  );
+
+  expectFail(
+    example.safeParse(JSON.stringify({value: '1.5'})),
+  ).toMatchInlineSnapshot(
+    `"Expected an integer string between \\"-9007199254740991\\" and \\"9007199254740991\\" but got \\"1.5\\""`,
+  );
+  expectFail(example.safeSerialize({value: 1.5})).toMatchInlineSnapshot(
+    `"Expected an integer between -9007199254740991 and 9007199254740991 but got 1.5"`,
+  );
+  expectFail(example.safeParse('hello world')).toMatchInlineSnapshot(
+    `"Invalid JSON: Unexpected token h in JSON at position 0"`,
+  );
+});
+
+test(`ParsedJsonString -> Unknown`, () => {
+  const example = s.ParsedJsonString();
+
+  expectOk(example.safeParse(JSON.stringify({value: '10'})))
+    .toMatchInlineSnapshot(`
+    Object {
+      "value": "10",
+    }
+  `);
+  expectOk(example.safeSerialize({value: '10'})).toMatchInlineSnapshot(
+    `"{\\"value\\":\\"10\\"}"`,
+  );
+
+  expectFail(example.safeParse('hello world')).toMatchInlineSnapshot(
+    `"Invalid JSON: Unexpected token h in JSON at position 0"`,
   );
 });
 

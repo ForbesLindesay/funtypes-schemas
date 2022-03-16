@@ -10,6 +10,7 @@ Validators and parsers for common types not covered by the base [funtypes](https
 This package includes all these schemas:
 
 - 🚀 Base64String
+- 🚀 ChainCodecs
 - 🚀 ConstrainLength
 - 🚀 DateString
 - 🚀 DateTime
@@ -24,6 +25,7 @@ This package includes all these schemas:
 - 🚀 ParsedDateTimeString
 - 🚀 ParsedFloatString
 - 🚀 ParsedIntegerString
+- 🚀 ParsedJsonString
 - 🚀 ParsedUrlString
 - 🚀 Url
 - 🚀 UrlString
@@ -133,6 +135,30 @@ deepEqual(
 );
 ```
 
+### ChainCodecs
+
+Chain multiple codecs together to combine parsers, for example you can parse a Base64 encoded JSON object:
+
+```ts
+import {deepEqual} from 'assert';
+
+import * as t from 'funtypes';
+import * as s from 'funtypes-schemas';
+
+const MySchema = s.ChainCodecs(
+  s.ParsedBase64String(),
+  s.ParsedJsonString(t.Object({value: s.Integer()})),
+);
+
+// ✅ Valid:
+deepEqual(assertMySchema.parse('eyJ2YWx1ZSI6NDJ9'), {value: 42});
+
+// ✅ Valid:
+deepEqual(assertMySchema.serialize({value: 42}), 'eyJ2YWx1ZSI6NDJ9');
+```
+
+You can pass as many codecs as you like as parameters to `ChainCodecs`. They will be applied in order when parsing and in reverse order when serializing.
+
 ### ConstrainLength
 
 Constrain the length of a base type that has a `length` property, such as a `String` or an `Array`.
@@ -183,7 +209,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  dateOfBirth: t.DateString({max: `2022-03-15`}),
+  dateOfBirth: s.DateString({max: `2022-03-15`}),
 });
 ```
 
@@ -232,7 +258,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.ParsedDateString(),
+  timestamp: s.ParsedDateString(),
 });
 
 deepEqual(
@@ -261,7 +287,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.ParsedDateString(),
+  timestamp: s.ParsedDateString(),
 });
 
 // The next line throws an error because there is a time
@@ -280,7 +306,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.DateTime({min: new Date(`2022-03-15`)}),
+  timestamp: s.DateTime({min: new Date(`2022-03-15`)}),
 });
 ```
 
@@ -325,7 +351,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.DateTimeString({min: new Date(`2022-03-15`), strict: true}),
+  timestamp: s.DateTimeString({min: new Date(`2022-03-15`), strict: true}),
 });
 ```
 
@@ -390,7 +416,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.ParsedDateTimeString({
+  timestamp: s.ParsedDateTimeString({
     min: new Date(`2022-03-15`),
     strict: true,
   }),
@@ -422,7 +448,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  timestamp: t.ParsedDateTimeString(),
+  timestamp: s.ParsedDateTimeString(),
 });
 
 // The next line throws an error because the
@@ -444,7 +470,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  weight: t.Float({min: 0, max: 1}),
+  weight: s.Float({min: 0, max: 1}),
 });
 ```
 
@@ -484,7 +510,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  weight: t.FloatString({min: `0`, max: `1`}),
+  weight: s.FloatString({min: `0`, max: `1`}),
 });
 ```
 
@@ -531,7 +557,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  weight: t.ParsedFloatString({min: 0, max: 1}),
+  weight: s.ParsedFloatString({min: 0, max: 1}),
 });
 
 deepEqual(
@@ -560,7 +586,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  level: t.ParsedIntegerString({min: 1, max: 6}),
+  level: s.ParsedIntegerString({min: 1, max: 6}),
 });
 
 // The next line throws an error because the value is outside the requested range:
@@ -581,7 +607,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  level: t.Integer({min: 1, max: 6}),
+  level: s.Integer({min: 1, max: 6}),
 });
 ```
 
@@ -621,7 +647,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  id: t.Integer({
+  id: s.Integer({
     min: `-9999999999999999999999999`,
     max: `9999999999999999999999999`,
   }),
@@ -671,7 +697,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  level: t.ParsedIntegerString({min: 1, max: 6}),
+  level: s.ParsedIntegerString({min: 1, max: 6}),
 });
 
 deepEqual(
@@ -700,8 +726,62 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  level: t.ParsedIntegerString({min: 1, max: 6}),
+  level: s.ParsedIntegerString({min: 1, max: 6}),
 });
+
+// The next line throws an error because the value is not an integer:
+MySchema.serialize({
+  level: 3.14,
+});
+```
+
+### ParsedJsonString
+
+Transparently parse/serialize to/from JSON. A codec can optionally be provided to handle the parsed value.
+
+✅ Valid:
+
+```ts
+import {deepEqual} from 'assert';
+
+import * as t from 'funtypes';
+import * as s from 'funtypes-schemas';
+
+const MySchema = s.ParsedJsonString(
+  t.Object({
+    level: s.ParsedIntegerString(),
+  }),
+);
+
+deepEqual(MySchema.parse(`{"level": "3"}`), {
+  level: 3,
+});
+
+deepEqual(
+  MySchema.serialize({
+    level: 3,
+  }),
+  `{"level":"3"}`,
+);
+```
+
+🚨 Invalid:
+
+```ts
+import * as t from 'funtypes';
+import * as s from 'funtypes-schemas';
+
+const MySchema = s.ParsedJsonString(
+  t.Object({
+    level: s.ParsedIntegerString(),
+  }),
+);
+
+// The next line throws an error because the string is not valid JSON:
+MySchema.parse(`{level: '3'}`);
+
+// The next line throws an error because the value is not an integer:
+MySchema.parse(`{"level": "3.14"}`);
 
 // The next line throws an error because the value is not an integer:
 MySchema.serialize({
@@ -722,7 +802,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  href: t.Url({allowedProtocols: new Set([`http:`, `https:`])}),
+  href: s.Url({allowedProtocols: new Set([`http:`, `https:`])}),
 });
 ```
 
@@ -763,7 +843,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  href: t.UrlString({allowedProtocols: new Set([`http:`, `https:`])}),
+  href: s.UrlString({allowedProtocols: new Set([`http:`, `https:`])}),
 });
 ```
 
@@ -806,7 +886,7 @@ import * as t from 'funtypes';
 import * as s from 'funtypes-schemas';
 
 const MySchema = t.Object({
-  href: t.ParsedUrlString(),
+  href: s.ParsedUrlString(),
 });
 
 deepEqual(
