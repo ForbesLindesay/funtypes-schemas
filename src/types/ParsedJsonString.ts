@@ -1,5 +1,5 @@
-import {Codec, showType, Unknown} from 'funtypes';
-import {String as S, ParsedValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {String as S, ParsedValue, showType, Unknown} from 'funtypes';
 
 export default function ParsedJsonString(): Codec<unknown>;
 export default function ParsedJsonString<T>(base: Codec<T>): Codec<T>;

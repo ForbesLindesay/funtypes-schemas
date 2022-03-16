@@ -1,5 +1,5 @@
-import {Codec, showType} from 'funtypes';
-import {ParsedValue} from 'funtypes';
+import type {Codec} from 'funtypes';
+import {ParsedValue, showType} from 'funtypes';
 
 export default function ChainCodecs<T>(
   ...codecs: [...Codec<any>[], Codec<T>]
