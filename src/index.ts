@@ -9,6 +9,7 @@ export type {IntegerStringOptions} from './types/IntegerString';
 export type {UrlOptions} from './types/Url';
 
 export {default as Base64String} from './types/Base64String';
+export {default as ChainCodecs} from './types/ChainCodecs';
 export {default as ConstrainLength} from './types/ConstrainLength';
 export {default as DateString} from './types/DateString';
 export {default as DateTime} from './types/DateTime';
@@ -26,4 +27,5 @@ export {default as ParsedDateString} from './types/ParsedDateString';
 export {default as ParsedDateTimeString} from './types/ParsedDateTimeString';
 export {default as ParsedFloatString} from './types/ParsedFloatString';
 export {default as ParsedIntegerString} from './types/ParsedIntegerString';
+export {default as ParsedJsonString} from './types/ParsedJsonString';
 export {default as ParsedUrlString} from './types/ParsedUrlString';
