@@ -593,6 +593,47 @@ test(`IntegerString`, () => {
   );
 });
 
+test(`Migrate`, () => {
+  const example = s.Migrate(t.Array(t.Number), (value): number[] =>
+    value.slice().reverse(),
+  );
+  expectOk(example.safeParse([1, 2, 3])).toEqual([3, 2, 1]);
+  expectFail(example.safeSerialize([1, 2, 3])).toMatchInlineSnapshot(
+    `"ParsedValue<number[]> does not support Runtype.serialize"`,
+  );
+  expect(example.test([1, 2, 3])).toBe(false);
+
+  const example2 = t.Union(
+    s.Migrate(t.Undefined, (): number[] => []),
+    t.Array(t.Number),
+  );
+  expectOk(example2.safeParse(undefined)).toEqual([]);
+  expectOk(example2.safeParse([])).toEqual([]);
+  expectOk(example2.safeParse([1, 2, 3])).toEqual([1, 2, 3]);
+
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw new Error(`My custom error`);
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"My custom error"`);
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw 'not an error';
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"Migration failed"`);
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw undefined;
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"Migration failed"`);
+});
+
 test(`ParsedBase64Array`, () => {
   const utf8 = `hello world 🎂 🎁 💩`;
   const b64 = Buffer.from(utf8).toString(`base64`);

@@ -19,6 +19,7 @@ This package includes all these schemas:
 - 🚀 FloatString
 - 🚀 Integer
 - 🚀 IntegerString
+- 🚀 Migrate
 - 🚀 ParsedBase64Array
 - 🚀 ParsedBase64String
 - 🚀 ParsedDateString
@@ -787,6 +788,119 @@ MySchema.parse(`{"level": "3.14"}`);
 MySchema.serialize({
   level: 3.14,
 });
+```
+
+### Migrate
+
+A simplified alternative to `ParsedValue`/`.withParser` for migrating legacy data. The `Migrate` cannot be serialized, so it's best used in a `Union` where one of the other types in the union handles serialization.
+
+🚀 Migrating an object to a new schema:
+
+```ts
+import {deepEqual} from 'assert';
+
+import * as t from 'funtypes';
+import * as s from 'funtypes-schemas';
+
+const MySchema = t.Union(
+  t.Object({
+    version: t.Literal(2),
+    width: t.Number,
+    height: t.Number,
+  }),
+  s.Migrate(
+    t.Object({
+      version: t.Literal(1),
+      size: t.Number,
+    }),
+    ({size}) => ({
+      version: 2,
+      width: size,
+      height: size,
+    }),
+  ),
+);
+
+// ✅ Valid:
+deepEqual(
+  MySchema.parse({
+    version: 2,
+    width: 10,
+    height: 15,
+  }),
+  {
+    version: 2,
+    width: 10,
+    height: 15,
+  },
+);
+
+// ✅ Valid:
+deepEqual(
+  MySchema.parse({
+    version: 1,
+    size: 42,
+  }),
+  {
+    version: 2,
+    width: 42,
+    height: 42,
+  },
+);
+
+// ✅ Valid:
+deepEqual(
+  MySchema.serialize({
+    version: 2,
+    width: 10,
+    height: 15,
+  }),
+  {
+    version: 2,
+    width: 10,
+    height: 15,
+  },
+);
+```
+
+🚀 Setting a default for an optional property:
+
+```ts
+import {deepEqual} from 'assert';
+
+import * as t from 'funtypes';
+import * as s from 'funtypes-schemas';
+
+const MySchema = t.Object({
+  values: t.Union(
+    t.Array(t.Number),
+    s.Migrate(t.Undefined, () => []),
+  ),
+});
+
+// ✅ Valid:
+deepEqual(MySchema.parse({values: [1, 2, 3]}), {values: [1, 2, 3]});
+
+// ✅ Valid:
+deepEqual(MySchema.parse({values: []}), {values: []});
+
+// ✅ Valid:
+deepEqual(MySchema.parse({values: undefined}), {values: []});
+
+// ✅ Valid:
+deepEqual(MySchema.parse({}), {values: []});
+
+// ✅ Valid:
+deepEqual(MySchema.serialize({values: [1, 2, 3]}), {values: [1, 2, 3]});
+
+// ✅ Valid:
+deepEqual(MySchema.serialize({values: []}), {values: []});
+
+// 🚨 Invalid:
+deepEqual(MySchema.serialize({values: undefined}), {values: []});
+
+// 🚨 Invalid:
+deepEqual(MySchema.serialize({}), {values: []});
 ```
 
 ### Url

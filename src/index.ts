@@ -18,6 +18,7 @@ export {default as Float} from './types/Float';
 export {default as FloatString} from './types/FloatString';
 export {default as Integer} from './types/Integer';
 export {default as IntegerString} from './types/IntegerString';
+export {default as Migrate} from './types/Migrate';
 export {default as Url} from './types/Url';
 export {default as UrlString} from './types/UrlString';
 
