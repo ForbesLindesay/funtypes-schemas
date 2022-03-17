@@ -794,7 +794,7 @@ MySchema.serialize({
 
 A simplified alternative to `ParsedValue`/`.withParser` for migrating legacy data. The `Migrate` cannot be serialized, so it's best used in a `Union` where one of the other types in the union handles serialization.
 
-✅ Valid:
+🚀 Migrating an object to a new schema:
 
 ```ts
 import {deepEqual} from 'assert';
@@ -821,6 +821,7 @@ const MySchema = t.Union(
   ),
 );
 
+// ✅ Valid:
 deepEqual(
   MySchema.parse({
     version: 2,
@@ -834,6 +835,7 @@ deepEqual(
   },
 );
 
+// ✅ Valid:
 deepEqual(
   MySchema.parse({
     version: 1,
@@ -846,6 +848,7 @@ deepEqual(
   },
 );
 
+// ✅ Valid:
 deepEqual(
   MySchema.serialize({
     version: 2,
@@ -859,6 +862,8 @@ deepEqual(
   },
 );
 ```
+
+🚀 Setting a default for an optional property:
 
 ```ts
 import {deepEqual} from 'assert';
