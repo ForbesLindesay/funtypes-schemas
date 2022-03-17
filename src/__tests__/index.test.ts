@@ -610,6 +610,28 @@ test(`Migrate`, () => {
   expectOk(example2.safeParse(undefined)).toEqual([]);
   expectOk(example2.safeParse([])).toEqual([]);
   expectOk(example2.safeParse([1, 2, 3])).toEqual([1, 2, 3]);
+
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw new Error(`My custom error`);
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"My custom error"`);
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw 'not an error';
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"Migration failed"`);
+  expectFail(
+    s
+      .Migrate(t.Unknown, () => {
+        throw undefined;
+      })
+      .safeParse(42),
+  ).toMatchInlineSnapshot(`"Migration failed"`);
 });
 
 test(`ParsedBase64Array`, () => {
