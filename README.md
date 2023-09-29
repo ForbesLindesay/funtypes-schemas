@@ -2,7 +2,7 @@
 
 Validators and parsers for common types not covered by the base [funtypes](https://github.com/ForbesLindesay/funtypes) package.
 
-[![Build Status](https://img.shields.io/github/workflow/status/ForbesLindesay/funtypes-schemas/Test/main?style=for-the-badge)](https://github.com/ForbesLindesay/funtypes-schemas/actions?query=workflow%3ATest+branch%3Amain)
+[![Build Status](https://img.shields.io/github/workflow/status/ForbesLindesay/funtypes-schemas/test.yml?event=push&style=for-the-badge)](https://github.com/ForbesLindesay/funtypes-schemas/actions?query=workflow%3ATest+branch%3Amain)
 [![Coveralls github branch](https://img.shields.io/coveralls/github/ForbesLindesay/funtypes-schemas/main?color=brightgreen&style=for-the-badge)](https://coveralls.io/github/ForbesLindesay/funtypes-schemas)
 [![Rolling Versions](https://img.shields.io/badge/Rolling%20Versions-Enabled-brightgreen?style=for-the-badge)](https://rollingversions.com/ForbesLindesay/funtypes-schemas)
 [![NPM version](https://img.shields.io/npm/v/funtypes-schemas?style=for-the-badge)](https://www.npmjs.com/package/funtypes-schemas)
