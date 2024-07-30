@@ -2,7 +2,7 @@
 
 Validators and parsers for common types not covered by the base [funtypes](https://github.com/ForbesLindesay/funtypes) package.
 
-[![Build Status](https://img.shields.io/github/workflow/status/ForbesLindesay/funtypes-schemas/Test/main?style=for-the-badge)](https://github.com/ForbesLindesay/funtypes-schemas/actions?query=workflow%3ATest+branch%3Amain)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ForbesLindesay/funtypes-schemas/test.yml?branch=main&style=for-the-badge)](https://github.com/ForbesLindesay/funtypes-schemas/actions?query=workflow%3ATest+branch%3Amain)
 [![Coveralls github branch](https://img.shields.io/coveralls/github/ForbesLindesay/funtypes-schemas/main?color=brightgreen&style=for-the-badge)](https://coveralls.io/github/ForbesLindesay/funtypes-schemas)
 [![Rolling Versions](https://img.shields.io/badge/Rolling%20Versions-Enabled-brightgreen?style=for-the-badge)](https://rollingversions.com/ForbesLindesay/funtypes-schemas)
 [![NPM version](https://img.shields.io/npm/v/funtypes-schemas?style=for-the-badge)](https://www.npmjs.com/package/funtypes-schemas)
@@ -366,7 +366,7 @@ const MySchema = t.Object({
 
 ✅ Valid with `strict: false`, but 🚨 invalid with `strict: true` (time zone, i.e. `Z`, is required):
 
-````json
+```json
 {
   "timestamp": "2022-03-16T12:03:00"
 }
@@ -378,7 +378,7 @@ const MySchema = t.Object({
 {
   "timestamp": "2022-03-16"
 }
-````
+```
 
 ✅ Valid with `strict: false` (JavaScript treats this as `2022-03-02T12:03:00.000Z`), but 🚨 invalid with `strict: true` (30th February is not a real date):
 
